@@ -4,8 +4,8 @@ import { StorageService } from './storage.service';
 @Injectable({
   providedIn: 'root',
 })
-export class CacheService {
-  private readonly storage = inject(StorageService<any>)
+export class CacheService<T> {
+  private readonly storage = inject(StorageService<T>)
 
   setItem(key: string, data: any, ttl: number): void {
     const now = new Date().getTime();
@@ -16,7 +16,7 @@ export class CacheService {
     this.storage.set(key, item);
   }
 
-  getItem(key: string): any | null {
+  getItem(key: string): T | null {
     const item = this.storage.get(key);
     if (!item) {
       return null;
@@ -25,7 +25,7 @@ export class CacheService {
     const now = new Date().getTime();
 
     if (now > item.expiry) {
-      localStorage.removeItem(key);
+      this.storage.remove(key);
       return null;
     }
 
@@ -33,6 +33,6 @@ export class CacheService {
   }
 
   removeItem(key: string): void {
-    localStorage.removeItem(key);
+    this.storage.remove(key);
   }
 }

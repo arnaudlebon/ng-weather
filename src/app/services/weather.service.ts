@@ -16,12 +16,12 @@ export class WeatherService {
   private cacheTTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
   // private cacheTTL = 30 * 1000; // 30 seconds in milliseconds
 
-  constructor(private http: HttpClient, private cacheService: CacheService) { }
+  constructor(private http: HttpClient, private cacheService: CacheService<CurrentConditions | Forecast>) { }
 
   addCurrentConditions(zipcode: string): void {
     const cachedData = this.cacheService.getItem(`currentConditions-${zipcode}`);
     if (cachedData) {
-      this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData }]);
+      this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData as CurrentConditions }]);
     } else {
       this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
         .pipe(
@@ -53,7 +53,7 @@ export class WeatherService {
   getForecast(zipcode: string): Observable<Forecast> {
     const cachedData = this.cacheService.getItem(`forecast-${zipcode}`);
     if (cachedData) {
-      return of(cachedData);
+      return of(cachedData as Forecast);
     } else {
       return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`)
         .pipe(
