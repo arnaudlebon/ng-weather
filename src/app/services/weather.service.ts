@@ -1,25 +1,38 @@
-import {Injectable, Signal, signal} from '@angular/core';
-import {Observable} from 'rxjs';
-
-import {HttpClient} from '@angular/common/http';
-import {ConditionsAndZip} from '../interfaces/conditions-and-zip.type';
+import { Injectable, Signal, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ConditionsAndZip } from '../interfaces/conditions-and-zip.type';
 import { CurrentConditions } from '../interfaces/current-conditions.type';
 import { Forecast } from '../interfaces/forecast.type';
+import { CacheService } from './cache.service';
+import { Observable, of } from 'rxjs';
+import { tap, shareReplay } from 'rxjs/operators';
 
 @Injectable()
 export class WeatherService {
-
   static URL = 'https://api.openweathermap.org/data/2.5';
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
   private currentConditions = signal<ConditionsAndZip[]>([]);
+  private cacheTTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
+  // private cacheTTL = 30 * 1000; // 30 seconds in milliseconds
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cacheService: CacheService) { }
 
   addCurrentConditions(zipcode: string): void {
-    // Here we make a request to get the current conditions data from the API. Note the use of backticks and an expression to insert the zipcode
-    this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
-      .subscribe(data => this.currentConditions.update(conditions => [...conditions, {zip: zipcode, data}]));
+    const cachedData = this.cacheService.getItem(`currentConditions-${zipcode}`);
+    if (cachedData) {
+      this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData }]);
+    } else {
+      this.http.get<CurrentConditions>(`${WeatherService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${WeatherService.APPID}`)
+        .pipe(
+          tap(data => {
+            this.cacheService.setItem(`currentConditions-${zipcode}`, data, this.cacheTTL);
+            this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
+          }),
+          shareReplay(1)
+        )
+        .subscribe();
+    }
   }
 
   removeCurrentConditions(zipcode: string) {
@@ -29,7 +42,8 @@ export class WeatherService {
           conditions.splice(+i, 1);
       }
       return conditions;
-    })
+    });
+    this.cacheService.removeItem(`currentConditions-${zipcode}`);
   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
@@ -37,9 +51,16 @@ export class WeatherService {
   }
 
   getForecast(zipcode: string): Observable<Forecast> {
-    // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
-    return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
-
+    const cachedData = this.cacheService.getItem(`forecast-${zipcode}`);
+    if (cachedData) {
+      return of(cachedData);
+    } else {
+      return this.http.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`)
+        .pipe(
+          tap(data => this.cacheService.setItem(`forecast-${zipcode}`, data, this.cacheTTL)),
+          shareReplay(1)
+        );
+    }
   }
 
   getWeatherIcon(id): string {
@@ -58,5 +79,4 @@ export class WeatherService {
     else
       return WeatherService.ICON_URL + "art_clear.png";
   }
-
 }
