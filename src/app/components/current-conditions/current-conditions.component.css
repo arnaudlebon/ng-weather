@@ -1,7 +1,40 @@
-.close {
+.nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+.nav-tabs li {
+  float: left;
+  margin-bottom: -1px;
+}
+.nav-tabs li a {
+  margin-right: 2px;
+  line-height: 1.42857143;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+.nav-tabs li a:hover {
+  border-color: #eee #eee #ddd;
+}
+.nav-tabs .active a {
+  color: #555;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+  cursor: default;
+}
+.close-tab {
+  margin-left: 5px;
   cursor: pointer;
 }
-.flex {
+
+.well.flex {
   display: flex;
   justify-content: space-between;
+}
+
+.well.flex div {
+  flex: 1;
+}
+
+.well img {
+  max-width: 100px;
 }
