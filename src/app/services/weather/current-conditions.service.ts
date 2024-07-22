@@ -22,12 +22,13 @@ export class CurrentConditionsService {
     }, { allowSignalWrites: true });
   }
 
-
   updateCurrentConditions(locations: string[]): void {
-    this.currentConditions.set([]);
-    for (let loc of locations) {
-      this.addCurrentConditions(loc);
-    }
+    const currentLocations = this.currentConditions().map(condition => condition.zip);
+    const locationsToAdd = locations.filter(loc => !currentLocations.includes(loc));
+    const locationsToRemove = currentLocations.filter(loc => !locations.includes(loc));
+
+    locationsToAdd.forEach(loc => this.addCurrentConditions(loc));
+    locationsToRemove.forEach(loc => this.removeCurrentConditions(loc));
   }
 
   addCurrentConditions(zipcode: string): void {
