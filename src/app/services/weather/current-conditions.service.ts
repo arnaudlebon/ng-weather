@@ -4,7 +4,6 @@ import { tap, shareReplay } from 'rxjs/operators';
 import { ConditionsAndZip } from 'app/interfaces/conditions-and-zip.type';
 import { CurrentConditions } from 'app/interfaces/current-conditions.type';
 import { CacheService } from '../storage/cache.service';
-import { LocationService } from '../location/location.service';
 import { APP_CONFIG, AppConfig } from 'app/app.config';
 
 @Injectable()
