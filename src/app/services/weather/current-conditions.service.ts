@@ -1,11 +1,11 @@
-import { Injectable, inject, signal, Signal, effect } from '@angular/core';
+import { Injectable, inject, signal, Signal, effect, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, shareReplay } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
 import { ConditionsAndZip } from 'app/interfaces/conditions-and-zip.type';
 import { CurrentConditions } from 'app/interfaces/current-conditions.type';
 import { CacheService } from '../storage/cache.service';
 import { LocationService } from '../location/location.service';
+import { APP_CONFIG, AppConfig } from 'app/app.config';
 
 @Injectable()
 export class CurrentConditionsService {
@@ -13,13 +13,10 @@ export class CurrentConditionsService {
   private readonly cacheService = inject(CacheService<CurrentConditions>);
   private readonly locationService = inject(LocationService);
 
-  private static readonly URL = 'https://api.openweathermap.org/data/2.5';
-  private static readonly APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   private cacheTTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
-  constructor() {
+  constructor(@Inject(APP_CONFIG) private config: AppConfig) {
     effect(() => {
       this.updateCurrentConditions(this.locationService.locations());
     }, { allowSignalWrites: true });
@@ -38,7 +35,7 @@ export class CurrentConditionsService {
     if (cachedData) {
       this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData as CurrentConditions }]);
     } else {
-      this.http.get<CurrentConditions>(`${CurrentConditionsService.URL}/weather?zip=${zipcode},us&units=imperial&APPID=${CurrentConditionsService.APPID}`)
+      this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`)
         .pipe(
           tap(data => {
             this.cacheService.setItem(`currentConditions-${zipcode}`, data, this.cacheTTL);
