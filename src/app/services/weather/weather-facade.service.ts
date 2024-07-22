@@ -16,14 +16,6 @@ export class WeatherFacadeService {
     return this.currentConditionsService.getCurrentConditions();
   }
 
-  addCurrentConditions(zipcode: string): void {
-    this.currentConditionsService.addCurrentConditions(zipcode);
-  }
-
-  removeCurrentConditions(zipcode: string): void {
-    this.currentConditionsService.removeCurrentConditions(zipcode);
-  }
-
   getForecast(zipcode: string): Observable<Forecast> {
     return this.forecastService.getForecast(zipcode);
   }

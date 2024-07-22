@@ -13,7 +13,6 @@ export class CurrentConditionsService {
   private readonly cacheService = inject(CacheService<CurrentConditions>);
   private readonly locationService = inject(LocationService);
 
-  private cacheTTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
   constructor(@Inject(APP_CONFIG) private config: AppConfig) {
@@ -22,7 +21,7 @@ export class CurrentConditionsService {
     }, { allowSignalWrites: true });
   }
 
-  updateCurrentConditions(locations: string[]): void {
+  private updateCurrentConditions(locations: string[]): void {
     const currentLocations = this.currentConditions().map(condition => condition.zip);
     const locationsToAdd = locations.filter(loc => !currentLocations.includes(loc));
     const locationsToRemove = currentLocations.filter(loc => !locations.includes(loc));
@@ -31,7 +30,7 @@ export class CurrentConditionsService {
     locationsToRemove.forEach(loc => this.removeCurrentConditions(loc));
   }
 
-  addCurrentConditions(zipcode: string): void {
+  private addCurrentConditions(zipcode: string): void {
     const cachedData = this.cacheService.getItem(`currentConditions-${zipcode}`);
     if (cachedData) {
       this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData as CurrentConditions }]);
@@ -39,7 +38,7 @@ export class CurrentConditionsService {
       this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`)
         .pipe(
           tap(data => {
-            this.cacheService.setItem(`currentConditions-${zipcode}`, data, this.cacheTTL);
+            this.cacheService.setItem(`currentConditions-${zipcode}`, data, this.config.cacheTTL);
             this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
           }),
           shareReplay(1)
@@ -48,7 +47,7 @@ export class CurrentConditionsService {
     }
   }
 
-  removeCurrentConditions(zipcode: string): void {
+  private removeCurrentConditions(zipcode: string): void {
     this.currentConditions.update(conditions => conditions.filter(condition => condition.zip !== zipcode));
     this.cacheService.removeItem(`currentConditions-${zipcode}`);
   }
