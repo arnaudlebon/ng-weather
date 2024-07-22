@@ -21,7 +21,12 @@ import { WeatherIconService } from "./services/weather/weather-icon.service";
 import { WeatherFacadeService } from "./services/weather/weather-facade.service";
 import { APP_CONFIG, appConfig } from "./app.config";
 
-
+export const WEATHER_SERVICES = [
+  CurrentConditionsService,
+  ForecastService,
+  WeatherIconService,
+  WeatherFacadeService
+];
 
 @NgModule({
   declarations: [
@@ -45,10 +50,7 @@ import { APP_CONFIG, appConfig } from "./app.config";
   ],
   providers: [
     LocationService,
-    WeatherFacadeService,
-    CurrentConditionsService,
-    ForecastService,
-    WeatherIconService,
+    WEATHER_SERVICES,
     { provide: APP_CONFIG, useValue: appConfig }
   ],
   bootstrap: [AppComponent],
