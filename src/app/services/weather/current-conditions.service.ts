@@ -11,17 +11,12 @@ import { APP_CONFIG, AppConfig } from 'app/app.config';
 export class CurrentConditionsService {
   private readonly http = inject(HttpClient);
   private readonly cacheService = inject(CacheService<CurrentConditions>);
-  private readonly locationService = inject(LocationService);
-
+  
   private currentConditions = signal<ConditionsAndZip[]>([]);
 
-  constructor(@Inject(APP_CONFIG) private config: AppConfig) {
-    effect(() => {
-      this.updateCurrentConditions(this.locationService.locations());
-    }, { allowSignalWrites: true });
-  }
+  constructor(@Inject(APP_CONFIG) private config: AppConfig) {}
 
-  private updateCurrentConditions(locations: string[]): void {
+  updateCurrentConditions(locations: string[]): void {
     const currentLocations = this.currentConditions().map(condition => condition.zip);
     const locationsToAdd = locations.filter(loc => !currentLocations.includes(loc));
     const locationsToRemove = currentLocations.filter(loc => !locations.includes(loc));
