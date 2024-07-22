@@ -14,8 +14,8 @@ import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { CurrentConditionsComponent } from "./components/current-conditions/current-conditions.component";
 import { ForecastsListComponent } from "./pages/forecasts-list/forecasts-list.component";
-import { TabComponent } from "./components/tab/tab.component";
-import { TabContentComponent } from "./components/tab-content/tab-content.component";
+import { TabContentComponent } from "./shared/tab-content/tab-content.component";
+import { TabComponent } from "./shared/tab/tab.component";
 
 @NgModule({
   declarations: [
