@@ -1,22 +1,38 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { effect, inject, Injectable, signal, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConditionsAndZip } from '../interfaces/conditions-and-zip.type';
 import { CurrentConditions } from '../interfaces/current-conditions.type';
 import { Forecast } from '../interfaces/forecast.type';
 import { CacheService } from './cache.service';
-import { Observable, of } from 'rxjs';
+import { LocationService } from './location.service';
 import { tap, shareReplay } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class WeatherService {
+  private readonly http = inject(HttpClient);
+  private readonly cacheService = inject(CacheService<CurrentConditions | Forecast>);
+  private readonly locationService = inject(LocationService);
+
   static URL = 'https://api.openweathermap.org/data/2.5';
   static APPID = '5a4b2d457ecbef9eb2a71e480b947604';
   static ICON_URL = 'https://raw.githubusercontent.com/udacity/Sunshine-Version-2/sunshine_master/app/src/main/res/drawable-hdpi/';
+  
   private currentConditions = signal<ConditionsAndZip[]>([]);
   private cacheTTL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-  // private cacheTTL = 30 * 1000; // 30 seconds in milliseconds
 
-  constructor(private http: HttpClient, private cacheService: CacheService<CurrentConditions | Forecast>) { }
+  constructor() {
+    effect(() => {
+      this.updateCurrentConditions(this.locationService.locations());
+    }, { allowSignalWrites: true });
+  }
+
+  private updateCurrentConditions(locations: string[]): void {
+    this.currentConditions.set([]);
+    for (let loc of locations) {
+      this.addCurrentConditions(loc);
+    }
+  }
 
   addCurrentConditions(zipcode: string): void {
     const cachedData = this.cacheService.getItem(`currentConditions-${zipcode}`);
@@ -35,14 +51,8 @@ export class WeatherService {
     }
   }
 
-  removeCurrentConditions(zipcode: string) {
-    this.currentConditions.update(conditions => {
-      for (let i in conditions) {
-        if (conditions[i].zip == zipcode)
-          conditions.splice(+i, 1);
-      }
-      return conditions;
-    });
+  removeCurrentConditions(zipcode: string): void {
+    this.currentConditions.update(conditions => conditions.filter(condition => condition.zip !== zipcode));
     this.cacheService.removeItem(`currentConditions-${zipcode}`);
   }
 
