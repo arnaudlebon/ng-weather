@@ -1,6 +1,5 @@
 import { Injectable, Signal, signal, effect, inject } from '@angular/core';
-import { StorageService } from './storage.service';
-import { Subject } from 'rxjs';
+import { StorageService } from '../storage/storage.service';
 
 export const LOCATIONS: string = "locations";
 

@@ -4,8 +4,7 @@ import { FormsModule } from "@angular/forms";
 
 import { AppComponent } from "./app.component";
 import { ZipcodeEntryComponent } from "./components/zipcode-entry/zipcode-entry.component";
-import { LocationService } from "./services/location.service";
-import { WeatherService } from "./services/weather.service";
+import { LocationService } from "./services/location/location.service";
 import { MainPageComponent } from "./pages/main-page/main-page.component";
 import { RouterModule } from "@angular/router";
 import { routing } from "./app.routing";
@@ -16,6 +15,18 @@ import { CurrentConditionsComponent } from "./components/current-conditions/curr
 import { ForecastsListComponent } from "./pages/forecasts-list/forecasts-list.component";
 import { TabContentComponent } from "./shared/tab-content/tab-content.component";
 import { TabComponent } from "./shared/tab/tab.component";
+import { CurrentConditionsService } from "./services/weather/current-conditions.service";
+import { ForecastService } from "./services/weather/forecast.service";
+import { WeatherIconService } from "./services/weather/weather-icon.service";
+import { WeatherFacadeService } from "./services/weather/weather-facade.service";
+import { APP_CONFIG, appConfig } from "./app.config";
+
+export const WEATHER_SERVICES = [
+  CurrentConditionsService,
+  ForecastService,
+  WeatherIconService,
+  WeatherFacadeService
+];
 
 @NgModule({
   declarations: [
@@ -37,7 +48,11 @@ import { TabComponent } from "./shared/tab/tab.component";
       enabled: environment.production,
     }),
   ],
-  providers: [LocationService, WeatherService],
+  providers: [
+    LocationService,
+    WEATHER_SERVICES,
+    { provide: APP_CONFIG, useValue: appConfig }
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
