@@ -28,13 +28,13 @@ export class CurrentConditionsService {
   }
 
   private addCurrentCondition(zipcode: string): void {
-    const cachedData = this.cacheService.getItem(`currentConditions-${zipcode}`);
+    const cachedData = this.cacheService.getItem(`weather-${zipcode}`);
     if (cachedData) {
       this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData as CurrentConditions }]);
     } else {
       this.fetchWeather(zipcode).pipe(
         tap(data => {
-          this.cacheService.setItem(`currentConditions-${zipcode}`, data, this.config.cacheTTL);
+          this.cacheService.setItem(`weather-${zipcode}`, data, this.config.cacheTTL);
           this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
         }),
         shareReplay(1),
@@ -45,7 +45,7 @@ export class CurrentConditionsService {
 
   private removeCurrentCondition(zipcode: string): void {
     this.currentConditions.update(conditions => conditions.filter(condition => condition.zip !== zipcode));
-    this.cacheService.removeItem(`currentConditions-${zipcode}`);
+    this.cacheService.removeItem(`weather-${zipcode}`);
 
   }
 
