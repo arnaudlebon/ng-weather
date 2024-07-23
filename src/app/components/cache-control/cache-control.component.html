@@ -7,6 +7,7 @@
     </div>
     <div class="actions">
       <button type="submit" class="btn btn-danger" [disabled]="cacheForm.invalid">Clear and update cache TTL</button>
+      <button type="button" class="btn btn-secondary" (click)="resetToDefault()">Reset to default</button>
     </div>          
     <hr>
     <strong>Current Cache TTL: </strong>{{ displayCacheTTL | formatCacheTTL }}

@@ -11,7 +11,7 @@ export interface AppConfig {
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 
 const savedCacheTTL = localStorage.getItem('cacheTTL');
-const defaultCacheTTL = 2 * 60 * 60 * 1000;
+export const defaultCacheTTL = 2 * 60 * 60 * 1000;
 const cacheTTL = savedCacheTTL ? parseInt(savedCacheTTL, 10) : defaultCacheTTL;
 
 export const appConfig: AppConfig = {

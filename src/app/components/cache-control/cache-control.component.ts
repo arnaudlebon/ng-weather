@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { appConfig } from '../../app.config';
+import { appConfig, defaultCacheTTL } from '../../app.config';
 import { StorageService } from 'app/services/storage/storage.service';
 
 @Component({
@@ -29,7 +29,8 @@ export class CacheControlComponent {
       appConfig.cacheTTL = newTTL;
       this.storageService.set('cacheTTL', Number(newTTL));
       this.updateCurrentCacheTTL(this.cacheForm.value.cacheTTL);
-      alert(`Cache successfully cleared and Cache TTL updated to ${this.displayCacheTTL}.`);
+      this.cacheForm.reset();
+      alert(`Cache successfully cleared and Cache TTL updated to ${this.displayCacheTTL} seconds.`);
     }
   }
   
@@ -37,20 +38,11 @@ export class CacheControlComponent {
     this.displayCacheTTL = ttl;
   }
 
-  private formatCacheTTL(seconds: number): string {
-    if (seconds < 60) {
-      return `${seconds} seconds`;
-    } else if (seconds < 3600) {
-      const minutes = Math.round(seconds / 60);
-      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    } else {
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.round((seconds % 3600) / 60);
-      if (minutes === 0) {
-        return `${hours} hour${hours !== 1 ? 's' : ''}`;
-      } else {
-        return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`;
-      }
-    }
+  resetToDefault() {
+    this.storageService.clear();
+    appConfig.cacheTTL = defaultCacheTTL;
+    this.updateCurrentCacheTTL(defaultCacheTTL / 1000);
+    this.cacheForm.reset();
+    alert(`Cache TTL reset to default value of ${this.displayCacheTTL} seconds.`);
   }
 }
