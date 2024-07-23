@@ -1,19 +1,32 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
-import { AppComponent } from './app.component';
-import { ZipcodeEntryComponent } from './zipcode-entry/zipcode-entry.component';
-import {LocationService} from "./location.service";
-import { ForecastsListComponent } from './forecasts-list/forecasts-list.component';
-import {WeatherService} from "./weather.service";
-import { CurrentConditionsComponent } from './current-conditions/current-conditions.component';
-import { MainPageComponent } from './main-page/main-page.component';
-import {RouterModule} from "@angular/router";
-import {routing} from "./app.routing";
-import {HttpClientModule} from "@angular/common/http";
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '../environments/environment';
+import { AppComponent } from "./app.component";
+import { ZipcodeEntryComponent } from "./components/zipcode-entry/zipcode-entry.component";
+import { LocationService } from "./services/location/location.service";
+import { MainPageComponent } from "./pages/main-page/main-page.component";
+import { RouterModule } from "@angular/router";
+import { routing } from "./app.routing";
+import { HttpClientModule } from "@angular/common/http";
+import { ServiceWorkerModule } from "@angular/service-worker";
+import { environment } from "../environments/environment";
+import { CurrentConditionsComponent } from "./components/current-conditions/current-conditions.component";
+import { ForecastsListComponent } from "./pages/forecasts-list/forecasts-list.component";
+import { TabContentComponent } from "./shared/tab-content/tab-content.component";
+import { TabComponent } from "./shared/tab/tab.component";
+import { CurrentConditionsService } from "./services/weather/current-conditions.service";
+import { ForecastService } from "./services/weather/forecast.service";
+import { WeatherIconService } from "./services/weather/weather-icon.service";
+import { WeatherFacadeService } from "./services/weather/weather-facade.service";
+import { APP_CONFIG, appConfig } from "./app.config";
+
+export const WEATHER_SERVICES = [
+  CurrentConditionsService,
+  ForecastService,
+  WeatherIconService,
+  WeatherFacadeService
+];
 
 @NgModule({
   declarations: [
@@ -21,17 +34,26 @@ import { environment } from '../environments/environment';
     ZipcodeEntryComponent,
     ForecastsListComponent,
     CurrentConditionsComponent,
-    MainPageComponent
+    TabComponent,
+    TabContentComponent,
+    MainPageComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     RouterModule,
     routing,
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register("/ngsw-worker.js", {
+      enabled: environment.production,
+    }),
   ],
-  providers: [LocationService, WeatherService],
-  bootstrap: [AppComponent]
+  providers: [
+    LocationService,
+    WEATHER_SERVICES,
+    { provide: APP_CONFIG, useValue: appConfig }
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

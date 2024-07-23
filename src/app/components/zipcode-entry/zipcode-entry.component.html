@@ -1,0 +1,13 @@
+<div class="well">
+  <h2>Enter a zipcode:</h2>
+  <input type="text" [formControl]="zipcodeControl" placeholder="Zipcode" class="form-control">
+  <br>
+  <button class="btn btn-primary" (click)="addLocation()" [disabled]="zipcodeControl.invalid" >
+    Add location
+  </button>
+</div>
+@if (errorMessage()) {
+  <div class="alert alert-danger" role="alert">
+    {{ errorMessage() }}
+  </div>
+}
