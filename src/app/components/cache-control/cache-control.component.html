@@ -9,5 +9,5 @@
       <button type="button" class="btn btn-secondary" (click)="resetToDefault()">Reset to default</button>
     </div>          
     <hr>
-    <strong>Current Cache TTL: </strong>{{ displayCacheTTL | formatCacheTTL }}
+    <strong>Current Cache TTL: </strong>{{ displayCacheTTL() | formatCacheTTL }}
   </form>
