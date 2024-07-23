@@ -1,5 +1,9 @@
- @if(displayCurrentConditions()) {
-  <app-tab (tabRemoved)="removeLocation($event)" tabKey="currentConditions">
+ <!-- @if (this.weatherService.isLoadingCurrentConditions()) {
+  <div class="spinner-table">
+    <div class="spinner primary"></div>
+  </div>
+ } @else if(displayCurrentConditions()) { -->
+  <app-tab (tabRemoved)="removeLocation($event)" *ngIf="currentConditionsByZip().length > 0" tabKey="currentConditions">
     <app-tab-content *ngFor="let location of currentConditionsByZip(); let i = index" [title]="location.data.name + ' (' + location.zip + ')'">
       <div class="well flex">
         <div>
@@ -21,4 +25,4 @@
       </div>
     </app-tab-content>
   </app-tab>
- }
+ <!-- } -->
