@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { appConfig, defaultCacheTTL } from '../../app.config';
 import { StorageService } from 'app/services/storage/storage.service';
@@ -8,14 +8,14 @@ import { StorageService } from 'app/services/storage/storage.service';
   templateUrl: './cache-control.component.html',
   styleUrls: ['./cache-control.component.css']
 })
-export class CacheControlComponent {
+export class CacheControlComponent implements OnInit{
   private readonly storageService = inject(StorageService<number>);
   private readonly fb = inject(FormBuilder);
 
   cacheForm: FormGroup;
   displayCacheTTL: number;
 
-  constructor() {
+  ngOnInit(): void {
     this.cacheForm = this.fb.group({
       cacheTTL: [undefined, [Validators.required, Validators.min(1)]],
     });
@@ -28,21 +28,30 @@ export class CacheControlComponent {
       const newTTL = this.cacheForm.value.cacheTTL * 1000;
       appConfig.cacheTTL = newTTL;
       this.storageService.set('cacheTTL', Number(newTTL));
-      this.updateCurrentCacheTTL(this.cacheForm.value.cacheTTL);
-      this.cacheForm.reset();
-      alert(`Cache successfully cleared and Cache TTL updated to ${this.displayCacheTTL} seconds.`);
+      this.notifyChanges({
+        message: `Cache successfully cleared and Cache TTL updated to ${Number(newTTL) / 1000} seconds.`,
+        ttl: this.cacheForm.value.cacheTTL
+      });
     }
   }
-  
-  private updateCurrentCacheTTL(ttl: number) {
-    this.displayCacheTTL = ttl;
-  }
 
-  resetToDefault() {
+  resetToDefault():void {
     this.storageService.clear();
     appConfig.cacheTTL = defaultCacheTTL;
-    this.updateCurrentCacheTTL(defaultCacheTTL / 1000);
+    this.notifyChanges({
+      message: `Cache TTL reset to default value of ${defaultCacheTTL / 1000} seconds.`,
+      ttl: defaultCacheTTL / 1000
+    });
+  }
+  
+  private notifyChanges(changes: {message: string, ttl: number}): void {
+    this.updateCurrentCacheTTL(changes.ttl);
     this.cacheForm.reset();
-    alert(`Cache TTL reset to default value of ${this.displayCacheTTL} seconds.`);
+    alert(changes.message);
+    window.location.reload();
+  }
+
+  private updateCurrentCacheTTL(ttl: number) {
+    this.displayCacheTTL = ttl;
   }
 }
