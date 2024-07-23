@@ -2,8 +2,7 @@
     <h2>Cache Control</h2>       
     <p>You can customize the cache TTL here. By default, it is set to <strong>2 hours</strong> in the <strong>app.config.ts</strong> file.<br> The cache TTL is currently used for caching the current conditions and forecasts.</p>       
     <div class="form-group">
-      <label for="cacheTTL">Cache TTL (seconds):</label>
-      <input id="cacheTTL" type="number" formControlName="cacheTTL" class="form-control">
+      <input id="cacheTTL" type="number" formControlName="cacheTTL" class="form-control" [placeholder]="'Cache TTL (seconds)'">
     </div>
     <div class="actions">
       <button type="submit" class="btn btn-danger" [disabled]="cacheForm.invalid">Clear and update cache TTL</button>
