@@ -28,18 +28,12 @@ export class CurrentConditionsService {
   }
 
   private addCurrentCondition(zipcode: string): void {
-    const cachedData = this.cacheService.getItem(`weather-${zipcode}`);
-    if (cachedData) {
-      this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data: cachedData as CurrentConditions }]);
-    } else {
-      this.fetchWeather(zipcode).pipe(
-        tap(data => {
-          this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
-        }),
-        shareReplay(1),
-        takeUntilDestroyed(this.destroyRef)
-      ).subscribe();
-    }
+    this.fetchWeather(zipcode).pipe(
+      tap(data => {
+        this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe();
   }
 
   private removeCurrentCondition(zipcode: string): void {
@@ -49,10 +43,10 @@ export class CurrentConditionsService {
   }
 
   fetchWeather(zipcode: string): Observable<CurrentConditions> {
-    return this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`).pipe(
-      tap(data => {
-        this.cacheService.setItem(`weather-${zipcode}`, data);
-      }));
+    return this.cacheService.fetchOrRetrieveFromCache(
+      `weather-${zipcode}`,
+      () => this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`)
+    );
   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
