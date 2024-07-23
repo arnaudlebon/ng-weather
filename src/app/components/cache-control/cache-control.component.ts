@@ -1,6 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { appConfig, defaultCacheTTL } from '../../app.config';
 import { StorageService } from 'app/services/storage/storage.service';
 import { CacheService } from 'app/services/storage/cache.service';
 
@@ -26,9 +25,8 @@ export class CacheControlComponent implements OnInit{
   updateCacheTTL() {
     if (this.cacheForm.valid) {
       const newTTL = this.cacheForm.value.cacheTTL * 1000;
-      this.cacheService.setDefaultTTL(newTTL);
       this.storageService.clear();
-      this.storageService.set('cacheTTL', newTTL);
+      this.cacheService.setDefaultTTL(newTTL);
       this.notifyChanges({
         message: `Cache successfully cleared and Cache TTL updated to ${Number(newTTL) / 1000} seconds.`,
         ttl: this.cacheForm.value.cacheTTL
@@ -37,9 +35,10 @@ export class CacheControlComponent implements OnInit{
   }
 
   resetToDefault():void {
-    this.cacheService.setDefaultTTL(defaultCacheTTL);
     this.storageService.clear();
-    this.storageService.set('cacheTTL', defaultCacheTTL);
+    this.cacheService.resetDefaultTTL();
+
+    const defaultCacheTTL = this.cacheService.defaultTTL();
     this.notifyChanges({
       message: `Cache TTL reset to default value of ${defaultCacheTTL / 1000} seconds.`,
       ttl: defaultCacheTTL / 1000

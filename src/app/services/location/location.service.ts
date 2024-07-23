@@ -1,7 +1,7 @@
 import { Injectable, Signal, signal, effect, inject } from '@angular/core';
 import { StorageService } from '../storage/storage.service';
 
-export const LOCATIONS: string = "locations";
+const LOCATIONS: string = "locations";
 
 @Injectable()
 export class LocationService {
@@ -10,7 +10,7 @@ export class LocationService {
 
   constructor() {
     effect(() => {
-      this.storage.set(LOCATIONS, this.locations$$());
+      this.storage.set(LOCATIONS, this.locations());
     });
   }
 

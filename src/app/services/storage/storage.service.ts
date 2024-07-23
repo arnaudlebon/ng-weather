@@ -7,7 +7,7 @@ export class StorageService<T> {
   constructor() {}
 
   get(key: string): T {
-    return JSON.parse(localStorage.getItem(key) ?? '[]') as T;
+    return JSON.parse(localStorage.getItem(key) ?? null) as T;
   }
 
   set(key: string, value: T): void {
