@@ -45,11 +45,6 @@ export class CacheControlComponent implements OnInit{
       ttl: defaultCacheTTL / 1000
     });
   }
-
-  private clearCache(): void {
-    this.storageService.clear();
-  }
-
   
   private notifyChanges(changes: {message: string, ttl: number}): void {
     this.cacheForm.reset();
