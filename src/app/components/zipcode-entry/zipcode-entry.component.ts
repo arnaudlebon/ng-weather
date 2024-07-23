@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { LocationService } from '../../services/location/location.service';
 import { WeatherFacadeService } from '../../services/weather/weather-facade.service';
 import { catchError, map, switchMap, take } from 'rxjs/operators';
-import { combineLatest, Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { toObservable, takeUntilDestroyed  } from '@angular/core/rxjs-interop';
 import { FormControl, Validators } from '@angular/forms';
 

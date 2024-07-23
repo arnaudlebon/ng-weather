@@ -11,6 +11,7 @@ import { Observable, Subscription } from "rxjs";
 export class MainPageComponent implements OnDestroy {
   private readonly locationService = inject(LocationService);
   private readonly weatherService = inject(WeatherFacadeService);
+
   private locations$ = toObservable(this.locationService.locations) as Observable<string[]>;
   private subscription: Subscription;
 

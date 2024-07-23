@@ -21,9 +21,11 @@ import { TabStateService } from 'app/services/tab/tab-state.service';
 })
 export class TabComponent implements AfterContentInit, OnDestroy {
   private readonly tabStateService = inject(TabStateService);
+
   @ContentChildren(TabContentComponent) tabs!: QueryList<TabContentComponent>;
   @Output() tabRemoved = new EventEmitter<number>();
   @Input() tabKey: string = 'default';
+  
   selectedIndex: number = 0;
   private subscription: Subscription;
 
@@ -32,7 +34,6 @@ export class TabComponent implements AfterContentInit, OnDestroy {
       this.selectedIndex = index;
       this.updateTabSelection();
     });
-
     this.updateTabSelection();
   }
 
@@ -55,11 +56,24 @@ export class TabComponent implements AfterContentInit, OnDestroy {
     event.stopPropagation();
     this.tabRemoved.emit(index);
     const tabsArray = this.tabs.toArray();
-    tabsArray.splice(index, 1);
-    if (this.selectedIndex >= index && this.selectedIndex > 0) {
-      this.selectedIndex--;
-    }
+    this.removeTabFromArray(tabsArray, index);
+    this.updateSelectedIndex(index, tabsArray.length);
     this.tabStateService.setSelectedIndex(this.tabKey, this.selectedIndex);
+    this.tabs.reset(tabsArray); 
     this.updateTabSelection();
+  }
+
+  private removeTabFromArray(tabsArray: TabContentComponent[], index: number): void {
+    tabsArray.splice(index, 1);
+  }
+  
+  private updateSelectedIndex(index: number, tabsArrayLength: number): void {
+    if (tabsArrayLength === 0) {
+      this.selectedIndex = 0;
+    } else if (this.selectedIndex > index) {
+      this.selectedIndex--;
+    } else if (this.selectedIndex === index) {
+      this.selectedIndex = Math.min(index, tabsArrayLength - 1);
+    }
   }
 }
