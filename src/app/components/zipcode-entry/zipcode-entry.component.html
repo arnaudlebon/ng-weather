@@ -6,3 +6,8 @@
     Add location
   </button>
 </div>
+@if (errorMessage()) {
+  <div class="alert alert-danger" role="alert">
+    {{ errorMessage() }}
+  </div>
+}

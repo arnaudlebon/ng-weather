@@ -5,6 +5,7 @@ import { ForecastService } from './forecast.service';
 import { WeatherIconService } from './weather-icon.service';
 import { ConditionsAndZip } from 'app/interfaces/conditions-and-zip.type';
 import { Forecast } from 'app/interfaces/forecast.type';
+import { CurrentConditions } from 'app/interfaces/current-conditions.type';
 
 @Injectable()
 export class WeatherFacadeService {
@@ -14,6 +15,10 @@ export class WeatherFacadeService {
 
   get isLoadingCurrentConditions(): Signal<boolean> {
     return this.currentConditionsService.isLoadingCurrentConditions;
+  }
+
+  fetchWeather(zipcode: string): Observable<CurrentConditions> {
+    return this.currentConditionsService.fetchWeather(zipcode);
   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {
