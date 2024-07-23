@@ -16,10 +16,13 @@ export class CacheService<T> {
   private readonly storage = inject(StorageService<CacheItem<T>>);
   private defaultTTL$$ = signal<number>(this.loadCacheTTL());
 
-  constructor() {
+  constructor() {    
+    /**
+     * Effect to update the localStorage with the current defaultTTL value.
+     * This effect only runs when the defaultTTL value changes and it is not the default value.
+     */
     effect(() => {
       if (this.defaultTTL() !== CACHE_PARAMS.defaultValue) {
-        console.log(this.defaultTTL());
         this.storage.set(CACHE_PARAMS.storageKey, this.defaultTTL());
       }
     });
