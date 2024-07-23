@@ -13,10 +13,6 @@ export class WeatherFacadeService {
   private readonly forecastService = inject(ForecastService);
   private readonly weatherIconService = inject(WeatherIconService);
 
-  get isLoadingCurrentConditions(): Signal<boolean> {
-    return this.currentConditionsService.isLoadingCurrentConditions;
-  }
-
   fetchWeather(zipcode: string): Observable<CurrentConditions> {
     return this.currentConditionsService.fetchWeather(zipcode);
   }
