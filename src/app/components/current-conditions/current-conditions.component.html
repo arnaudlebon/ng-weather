@@ -1,4 +1,4 @@
- <app-tab (tabRemoved)="removeLocation($event)" *ngIf="currentConditionsByZip().length > 0">
+<app-tab (tabRemoved)="removeLocation($event)" *ngIf="currentConditionsByZip().length > 0" tabKey="currentConditions">
   <app-tab-content *ngFor="let location of currentConditionsByZip(); let i = index" [title]="location.data.name + ' (' + location.zip + ')'">
     <div class="well flex">
       <div>

@@ -14,5 +14,8 @@ export const appConfig: AppConfig = {
     apiUrl: environment.apiUrl,
     appId: environment.appId,
     iconUrl: environment.iconUrl,
-    cacheTTL: 2 * 60 * 60 * 1000
+    /********************************************************************/
+    /** You can customize cacheTTL there and set a few seconds to test **/ 
+    cacheTTL: 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+    // cacheTTL: 30 * 1000 // 30 seconds in milliseconds
   };

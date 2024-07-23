@@ -1,5 +1,7 @@
-import { Component, ContentChildren, QueryList, AfterContentInit, EventEmitter, Output } from '@angular/core';
+import { Component, ContentChildren, QueryList, AfterContentInit, EventEmitter, Output, OnDestroy, Input, inject } from '@angular/core';
 import { TabContentComponent } from '../tab-content/tab-content.component';
+import { Subscription } from 'rxjs';
+import { TabStateService } from 'app/services/tab/tab-state.service';
 
 @Component({
   selector: 'app-tab',
@@ -17,34 +19,61 @@ import { TabContentComponent } from '../tab-content/tab-content.component';
   `,
   styleUrls: ['./tab.component.css']
 })
-export class TabComponent implements AfterContentInit {
+export class TabComponent implements AfterContentInit, OnDestroy {
+  private readonly tabStateService = inject(TabStateService);
+
   @ContentChildren(TabContentComponent) tabs!: QueryList<TabContentComponent>;
   @Output() tabRemoved = new EventEmitter<number>();
+  @Input() tabKey: string = 'default';
+  
   selectedIndex: number = 0;
+  private subscription: Subscription;
 
   ngAfterContentInit() {
-    const activeTabs = this.tabs.filter(tab => tab.active);
-    if (activeTabs.length === 0) {
-      this.selectTab(0);
+    this.subscription = this.tabStateService.getSelectedIndex(this.tabKey).subscribe(index => {
+      this.selectedIndex = index;
+      this.updateTabSelection();
+    });
+    this.updateTabSelection();
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
   }
 
   selectTab(index: number) {
-    this.tabs.toArray().forEach((tab, i) => tab.active = i === index);
     this.selectedIndex = index;
+    this.tabStateService.setSelectedIndex(this.tabKey, index);
+  }
+
+  updateTabSelection() {
+    this.tabs.toArray().forEach((tab, i) => tab.active = i === this.selectedIndex);
   }
 
   onRemoveTab(index: number, event: MouseEvent) {
     event.stopPropagation();
     this.tabRemoved.emit(index);
     const tabsArray = this.tabs.toArray();
+    this.removeTabFromArray(tabsArray, index);
+    this.updateSelectedIndex(index, tabsArray.length);
+    this.tabStateService.setSelectedIndex(this.tabKey, this.selectedIndex);
+    this.tabs.reset(tabsArray); 
+    this.updateTabSelection();
+  }
+
+  private removeTabFromArray(tabsArray: TabContentComponent[], index: number): void {
     tabsArray.splice(index, 1);
-    if (this.selectedIndex >= index && this.selectedIndex > 0) {
-      this.selectTab(this.selectedIndex - 1);
-    } else if (this.selectedIndex >= tabsArray.length) {
-      this.selectTab(tabsArray.length - 1);
-    } else {
-      this.selectTab(this.selectedIndex);
+  }
+  
+  private updateSelectedIndex(index: number, tabsArrayLength: number): void {
+    if (tabsArrayLength === 0) {
+      this.selectedIndex = 0;
+    } else if (this.selectedIndex > index) {
+      this.selectedIndex--;
+    } else if (this.selectedIndex === index) {
+      this.selectedIndex = Math.min(index, tabsArrayLength - 1);
     }
   }
 }
