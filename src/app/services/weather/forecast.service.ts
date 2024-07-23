@@ -20,7 +20,7 @@ export class ForecastService {
     } else {
       return this.http.get<Forecast>(`${this.config.apiUrl}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${this.config.appId}`)
         .pipe(
-          tap(data => this.cacheService.setItem(`forecast-${zipcode}`, data, this.config.cacheTTL)),
+          tap(data => this.cacheService.setItem(`forecast-${zipcode}`, data)),
           shareReplay(1)
         );
     }

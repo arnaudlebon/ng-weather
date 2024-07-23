@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { appConfig, defaultCacheTTL } from '../../app.config';
 import { StorageService } from 'app/services/storage/storage.service';
+import { CacheService } from 'app/services/storage/cache.service';
 
 @Component({
   selector: 'app-cache-control',
@@ -9,10 +10,11 @@ import { StorageService } from 'app/services/storage/storage.service';
   styleUrls: ['./cache-control.component.css']
 })
 export class CacheControlComponent implements OnInit{
+  private readonly cacheService = inject(CacheService<number>);
   private readonly storageService = inject(StorageService<number>);
   private readonly fb = inject(FormBuilder);
 
-  displayCacheTTL = signal<number>(appConfig.cacheTTL / 1000);
+  displayCacheTTL = signal<number>(this.cacheService.defaultTTL() / 1000);
   cacheForm: FormGroup;
 
   ngOnInit(): void {
@@ -24,8 +26,9 @@ export class CacheControlComponent implements OnInit{
   updateCacheTTL() {
     if (this.cacheForm.valid) {
       const newTTL = this.cacheForm.value.cacheTTL * 1000;
-      this.clearCache();
-      this.setCacheTTL(newTTL);
+      this.cacheService.setDefaultTTL(newTTL);
+      this.storageService.clear();
+      this.storageService.set('cacheTTL', newTTL);
       this.notifyChanges({
         message: `Cache successfully cleared and Cache TTL updated to ${Number(newTTL) / 1000} seconds.`,
         ttl: this.cacheForm.value.cacheTTL
@@ -34,8 +37,9 @@ export class CacheControlComponent implements OnInit{
   }
 
   resetToDefault():void {
-    this.clearCache();
-    this.setCacheTTL(defaultCacheTTL, false);
+    this.cacheService.setDefaultTTL(defaultCacheTTL);
+    this.storageService.clear();
+    this.storageService.set('cacheTTL', defaultCacheTTL);
     this.notifyChanges({
       message: `Cache TTL reset to default value of ${defaultCacheTTL / 1000} seconds.`,
       ttl: defaultCacheTTL / 1000
@@ -46,13 +50,6 @@ export class CacheControlComponent implements OnInit{
     this.storageService.clear();
   }
 
-  private setCacheTTL(ttl: number, enableStorage: boolean = true): void {
-    appConfig.cacheTTL = ttl;
-    this.displayCacheTTL.set(ttl / 1000);
-    if (enableStorage) {
-      this.storageService.set('cacheTTL', ttl);
-    }
-  }
   
   private notifyChanges(changes: {message: string, ttl: number}): void {
     this.cacheForm.reset();

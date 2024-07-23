@@ -51,7 +51,7 @@ export class CurrentConditionsService {
   fetchWeather(zipcode: string): Observable<CurrentConditions> {
     return this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`).pipe(
       tap(data => {
-        this.cacheService.setItem(`weather-${zipcode}`, data, this.config.cacheTTL);
+        this.cacheService.setItem(`weather-${zipcode}`, data);
       }));
   }
 
