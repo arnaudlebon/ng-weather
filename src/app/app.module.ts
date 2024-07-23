@@ -13,13 +13,15 @@ import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { CurrentConditionsComponent } from "./components/current-conditions/current-conditions.component";
 import { ForecastsListComponent } from "./pages/forecasts-list/forecasts-list.component";
-import { TabContentComponent } from "./shared/tab-content/tab-content.component";
-import { TabComponent } from "./shared/tab/tab.component";
+import { TabContentComponent } from "./shared/components/tab-content/tab-content.component";
+import { TabComponent } from "./shared/components/tab/tab.component";
 import { CurrentConditionsService } from "./services/weather/current-conditions.service";
 import { ForecastService } from "./services/weather/forecast.service";
 import { WeatherIconService } from "./services/weather/weather-icon.service";
 import { WeatherFacadeService } from "./services/weather/weather-facade.service";
 import { APP_CONFIG, appConfig } from "./app.config";
+import { CacheControlComponent } from "./components/cache-control/cache-control.component";
+import { FormatCacheTTLPipe } from "./shared/pipes/format-cache-ttl.pipe";
 
 export const WEATHER_SERVICES = [
   CurrentConditionsService,
@@ -35,7 +37,9 @@ export const WEATHER_SERVICES = [
     ForecastsListComponent,
     CurrentConditionsComponent,
     TabComponent,
+    CacheControlComponent,
     TabContentComponent,
+    FormatCacheTTLPipe,
     MainPageComponent,
   ],
   imports: [

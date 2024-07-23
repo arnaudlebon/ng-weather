@@ -3,6 +3,7 @@ import { LocationService } from "app/services/location/location.service";
 import { WeatherFacadeService } from "app/services/weather/weather-facade.service";
 import { toObservable } from "@angular/core/rxjs-interop";
 import { Observable, Subscription } from "rxjs";
+import { take } from "rxjs/operators";
 
 @Component({
   selector: "app-main-page",

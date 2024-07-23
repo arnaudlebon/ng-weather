@@ -1,11 +1,11 @@
-import { Injectable, inject, signal, Signal, effect, Inject, DestroyRef } from '@angular/core';
+import { Injectable, inject, signal, Signal, Inject, DestroyRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, shareReplay } from 'rxjs/operators';
 import { ConditionsAndZip } from 'app/interfaces/conditions-and-zip.type';
 import { CurrentConditions } from 'app/interfaces/current-conditions.type';
 import { CacheService } from '../storage/cache.service';
 import { APP_CONFIG, AppConfig } from 'app/app.config';
-import { forkJoin, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable()
@@ -34,7 +34,6 @@ export class CurrentConditionsService {
     } else {
       this.fetchWeather(zipcode).pipe(
         tap(data => {
-          this.cacheService.setItem(`weather-${zipcode}`, data, this.config.cacheTTL);
           this.currentConditions.update(conditions => [...conditions, { zip: zipcode, data }]);
         }),
         shareReplay(1),
@@ -50,7 +49,10 @@ export class CurrentConditionsService {
   }
 
   fetchWeather(zipcode: string): Observable<CurrentConditions> {
-    return this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`);
+    return this.http.get<CurrentConditions>(`${this.config.apiUrl}/weather?zip=${zipcode},us&units=imperial&APPID=${this.config.appId}`).pipe(
+      tap(data => {
+        this.cacheService.setItem(`weather-${zipcode}`, data, this.config.cacheTTL);
+      }));
   }
 
   getCurrentConditions(): Signal<ConditionsAndZip[]> {

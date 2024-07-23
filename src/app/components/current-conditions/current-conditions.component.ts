@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Signal } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { Router } from "@angular/router";
 import { ConditionsAndZip } from 'app/interfaces/conditions-and-zip.type';
 import { LocationService } from 'app/services/location/location.service';

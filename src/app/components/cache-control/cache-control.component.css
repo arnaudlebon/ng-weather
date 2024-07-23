@@ -1,0 +1,27 @@
+
+.well.flex {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .well.flex div {
+    flex: 1;
+  }
+  
+  .well img {
+    max-width: 200px;
+  }
+  
+  .img-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+
+.well button {
+  min-width: 200px;
+}
+.actions {
+  display: flex;
+  gap: 20px;
+}

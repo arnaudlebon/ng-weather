@@ -10,12 +10,13 @@ export interface AppConfig {
 
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 
+const savedCacheTTL = localStorage.getItem('cacheTTL');
+const defaultCacheTTL = 2 * 60 * 60 * 1000;
+const cacheTTL = savedCacheTTL ? parseInt(savedCacheTTL, 10) : defaultCacheTTL;
+
 export const appConfig: AppConfig = {
     apiUrl: environment.apiUrl,
     appId: environment.appId,
     iconUrl: environment.iconUrl,
-    /********************************************************************/
-    /** You can customize cacheTTL there and set a few seconds to test **/ 
-    cacheTTL: 2 * 60 * 60 * 1000 // 2 hours in milliseconds
-    // cacheTTL: 30 * 1000 // 30 seconds in milliseconds
+    cacheTTL
   };

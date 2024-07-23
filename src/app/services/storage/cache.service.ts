@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { StorageService } from './storage.service';
+import { CacheItem } from 'app/interfaces/cache.type';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CacheService<T> {
-  private readonly storage = inject(StorageService<T>)
+  private readonly storage = inject(StorageService<CacheItem<T>>)
 
   setItem(key: string, data: any, ttl: number): void {
     const now = new Date().getTime();
