@@ -35,7 +35,7 @@ export class CacheControlComponent implements OnInit{
 
   resetToDefault():void {
     this.clearCache();
-    this.setCacheTTL(defaultCacheTTL);
+    this.setCacheTTL(defaultCacheTTL, false);
     this.notifyChanges({
       message: `Cache TTL reset to default value of ${defaultCacheTTL / 1000} seconds.`,
       ttl: defaultCacheTTL / 1000
@@ -46,10 +46,12 @@ export class CacheControlComponent implements OnInit{
     this.storageService.clear();
   }
 
-  private setCacheTTL(ttl: number): void {
+  private setCacheTTL(ttl: number, enableStorage: boolean = true): void {
     appConfig.cacheTTL = ttl;
-    this.storageService.set('cacheTTL', ttl);
     this.displayCacheTTL.set(ttl / 1000);
+    if (enableStorage) {
+      this.storageService.set('cacheTTL', ttl);
+    }
   }
   
   private notifyChanges(changes: {message: string, ttl: number}): void {
