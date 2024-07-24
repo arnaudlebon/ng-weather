@@ -39,7 +39,6 @@ export class CurrentConditionsService {
   private removeCurrentCondition(zipcode: string): void {
     this.currentConditions.update(conditions => conditions.filter(condition => condition.zip !== zipcode));
     this.cacheService.removeItem(`weather-${zipcode}`);
-
   }
 
   fetchWeather(zipcode: string): Observable<CurrentConditions> {

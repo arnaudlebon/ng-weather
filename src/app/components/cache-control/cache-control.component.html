@@ -1,6 +1,6 @@
   <form [formGroup]="cacheForm" class="well" (ngSubmit)="updateCacheTTL()">
     <h2>Cache Control</h2>       
-    <p>You can customize the cache TTL here. By default, it is set to <strong>2 hours</strong> in the <strong>app.config.ts</strong> file.<br> The cache TTL is currently used for caching the weathers and forecasts.</p>       
+    <p>You can customize the cache TTL here. By default, it is set to <strong>2 hours</strong>.<br> The cache TTL is currently used for caching the <strong>weathers</strong> and <strong>forecasts</strong>.</p>       
     <div class="form-group">
       <input id="cacheTTL" type="number" formControlName="cacheTTL" class="form-control" [placeholder]="'Cache TTL (seconds)'">
     </div>
