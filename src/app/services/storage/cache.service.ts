@@ -67,7 +67,7 @@ export class CacheService<T> {
    * @param data - The data to store in the cache.
    * @param ttl - Optional TTL in milliseconds. If not provided, the default TTL is used.
    */
-  private setItem(key: string, data: any, ttl?: number): void {
+  private setItem(key: string, data: T, ttl?: number): void {
     const now = new Date().getTime();
     const item = {
       data: data,

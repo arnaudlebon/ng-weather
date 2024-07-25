@@ -5,6 +5,7 @@ import { catchError, map, switchMap, take } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { toObservable, takeUntilDestroyed  } from '@angular/core/rxjs-interop';
 import { FormControl, Validators } from '@angular/forms';
+import { CurrentConditions } from 'app/interfaces/current-conditions.type';
 
 @Component({
   selector: 'app-zipcode-entry',
@@ -50,7 +51,7 @@ export class ZipcodeEntryComponent {
     );
   }
 
-  private checkCanFetchWeather(zipcode: string): Observable<any> {
+  private checkCanFetchWeather(zipcode: string): Observable<CurrentConditions> {
     return this.weatherService.fetchWeather(zipcode).pipe(
       catchError(() => {
         return throwError(new Error(`Failed to load weather data for zipcode: ${zipcode}`));
